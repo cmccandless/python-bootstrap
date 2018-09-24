@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
 from datetime import datetime
@@ -44,6 +45,11 @@ class CustomFormatter(
 
 def str_lower(s):
     return s.lower()
+
+
+def key_value_pair(s):
+    k, v = re.split(':=|[:=]', s, 1)
+    return (k, v)
 
 
 def get_cli_output(*args):
@@ -319,6 +325,11 @@ def build_cli():
         help='Generate CI config'
     )
     parser.add_argument(
+        '-o', '--option', type=key_value_pair, action='append',
+        dest='options', metavar='KEY=VALUE',
+        help='Additional options'
+    )
+    parser.add_argument(
         'package', metavar='PACKAGE_NAME', nargs='?',
     )
     for arg in ['readme', 'package', 'pypi', 'setup']:
@@ -336,6 +347,10 @@ if __name__ == '__main__':
     if opts.help is not None:
         display_help(parser, opts.help)
 
+    if opts.options is not None:
+        for k, v in opts.options:
+            setattr(opts, k, v)
+
     setattr(opts, 'now', datetime.now())
     if getattr(opts, 'author_name', None) is None:
         author_name = get_cli_output('git', 'config', 'user.name')
@@ -345,6 +360,8 @@ if __name__ == '__main__':
         setattr(opts, 'author_email', author_email)
     if opts.license is not None:
         create_license_md(opts)
+    else:
+        os.remove('LICENSE')
     if not opts.no_readme:
         create_readme_md(opts)
     if not opts.no_package:
