@@ -187,7 +187,8 @@ matrix:
   allow_failures:
     - python: nightly
 
-install:  - make init
+install:
+  - make init
   - python -m pip install -e .
 
 before_script:
