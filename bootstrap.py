@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import argparse
 import json
 import logging
@@ -20,7 +20,7 @@ try:
 except NameError:
     user_input = input
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig()
 logger = logging.getLogger(__file__)
 
 VERSION = '1.0.0'
